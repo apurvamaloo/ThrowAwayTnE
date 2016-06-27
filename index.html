@@ -1,0 +1,288 @@
+<!--<html ng-app="oneDirectionTree" ng-controller="ctrl">
+<h1>HIIIII</h1>
+</html>-->
+
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.9/angular-material.css" rel="stylesheet"></link>
+  <style>
+
+  </style>
+</head>
+<!--style="background-color:#e1e8f0"-->
+<body ng-app="oneDirectionTree" ng-controller="ctrl" style="background-color:#dddfd4;">
+
+  <div layout="column">
+    <md-toolbar  layout="row" class="md-whiteframe-z5" style="position:fixed; background-color:#3fb0ac">
+      <div class="md-toolbar-tools">
+        <md-button class="md-icon-button" aria-label="Settings" ng-disabled="true">
+          <md-icon md-font-icon="menu" />
+          <i class="material-icons" style="color:white;font:bold;" >menu</i>
+        </md-button>
+        <h2>
+          Travel and Expense
+        </h2>
+        <span flex></span>
+        <i class="material-icons" style="color:white;font:bold;" >home</i>
+        <i class="material-icons" style="color:white;font:bold;" >notifications</i>
+        <i class="material-icons" style="color:white;font:bold;" >person</i>
+      </div>
+    </md-toolbar>
+    <div style="margin-top: 200px;">
+      {{legs}}
+
+      <br>
+      {{arrayOfNodes}}
+      <br>
+
+      <!-- <div layout="row" layout-align="center center" >
+
+
+      <md-button  class="md-fab"></md-button>
+      <span flex="" style="height: 3px; background:rgba(0,0,0,.15);"></span>
+      <md-button   class="md-fab"></md-button>
+    </div> -->
+    <div layout="row"  >
+
+      <div  flex  ng-repeat="leg in legs"  >
+        {{$index}}
+        <div   ng-if="$index==0" layout="row"  layout-align="center center">
+          <md-button  class="md-fab" ng-click=clickedNode($index)>{{arrayOfNodes[$index].city}}</md-button>
+          <span flex style="height: 3px;background:rgba(0,0,0,.15);"></span>
+          <md-button   class="md-fab" ng-click=clickedNode($index+1)>{{arrayOfNodes[$index+1].city}}</md-button>
+        </div>
+
+        <div   ng-if="$index!=0" layout="row" layout-align="center center">
+
+          <span flex style="height: 3px;background:rgba(0,0,0,.15);"></span>
+          <md-button  ng-click=clickedNode($index+1) class="md-fab">{{arrayOfNodes[$index+1].city}}</md-button>
+
+          <ng-md-icon flex="40"  size="35px" flex-offset="10" icon="add_circle"  ng-show="$index==legs.length-1" ng-click=" addLeg()"></ng-md-icon>
+        </div>
+      </div>
+
+
+    </div>
+    <div layout="row">
+      <md-card  flex-offset="10" flex="80">
+        <md-card-content layout="row" layout-align="center center" layout-wrap class="md-inline-form">
+          <div layout="column" flex="20" >
+            <!-- <md-input-container>
+              <label>From</label>
+              <input type="text" ng-model=arrayOfNodes[currentLegIndex].city>
+            </md-input-container> -->
+
+            <md-autocomplete
+           md-input-name="autocompleteField"
+           md-input-minlength="2"
+           md-input-maxlength="18"
+           md-no-cache="noCache"
+           md-selected-item="arrayOfNodes[currentLegIndex].city"
+           md-search-text="searchText[currentLegIndex]"
+           md-items="item in querySearch(searchText[currentLegIndex])"
+           md-item-text="item"
+           md-floating-label="From">
+         <md-item-template>
+           <span md-highlight-text="searchText[currentLegIndex]">{{item}}</span>
+         </md-item-template>
+         <div ng-messages="searchForm.autocompleteField.$error" ng-if="searchForm.autocompleteField.$touched">
+           <div ng-message="required">You <b>must</b> have a favorite state.</div>
+           <div ng-message="minlength">Your entry is not long enough.</div>
+           <div ng-message="maxlength">Your entry is too long.</div>
+         </div>
+       </md-autocomplete>
+
+            <md-button ng-click="addStay()" >Do you want Stay in {{arrayOfNodes[currentLegIndex].city}}?</md-button>
+          </div>
+
+          <div layout="column" flex="20"  flex-offset="5"  >
+            <!-- <md-input-container>
+              <label>To</label>
+              <input type="text" ng-model=arrayOfNodes[currentLegIndex+1].city>
+            </md-input-container> -->
+            <md-autocomplete style="margin-top:60px;"
+            md-input-name="autocompleteField"
+            md-input-minlength="2"
+            md-input-maxlength="18"
+            md-no-cache="noCache"
+            md-selected-item="arrayOfNodes[currentLegIndex+1].city"
+            md-search-text="searchText[currentLegIndex+1]"
+            md-items="item in querySearch(searchText[currentLegIndex+1])"
+            md-item-text="item"
+            md-floating-label="To">
+          <md-item-template>
+            <span md-highlight-text="searchText[currentLegIndex+1]">{{item}}</span>
+          </md-item-template>
+          <div ng-messages="searchForm.autocompleteField.$error" ng-if="searchForm.autocompleteField.$touched">
+            <div ng-message="required">You <b>must</b> have a favorite state.</div>
+            <div ng-message="minlength">Your entry is not long enough.</div>
+            <div ng-message="maxlength">Your entry is too long.</div>
+          </div>
+        </md-autocomplete>
+            <md-button ng-click="addToStay()" >Do you want Stay in {{arrayOfNodes[currentLegIndex+1].city}}?</md-button>
+          </div>
+
+          <!-- <md-input-container flex-offset="5" flex="20">
+          <label>To</label>
+          <input type="text" ng-model=currentLeg.to>
+        </md-input-container> -->
+
+
+        <md-input-container flex-offset="5" flex="20" >
+          <label>Mode</label>
+          <md-select ng-model="currentLeg.mode">
+            <md-option ng-repeat="mode in modes" value="{{mode}}">{{mode}}</md-option>
+          </md-select>
+        </md-input-container>
+        <md-datepicker flex-offset="5" flex="20" ng-model="currentLeg.date" md-placeholder="Travel Date" ></md-datepicker>
+        <div flex-offset="5" flex="20">
+          <md-button class="md-fab "><i class="material-icons" ng-click=addLeg() >add</i></md-button>
+          <span>Add Leg</span>
+        </div>
+
+        <!-- <md-button ng-click="next()" >Next</md-button>
+        <md-button ng-click="prev()" >Prev</md-button> -->
+      </md-card-content>
+    </md-card>
+  </div>
+
+  <div layout="row" ng-show="arrayOfNodes[currentLegIndex].stay.length>0" >
+    <md-card  flex-offset="10" flex="80" layout="column"  >
+      <md-card-title >
+        <md-card-title-text>
+          <span class="md-headline">  Stay at {{arrayOfNodes[currentLegIndex].city}}</span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content layout ="row" layout-align="center center"  layout-wrap class="md-inline-form" ng-repeat="stay in arrayOfNodes[currentLegIndex].stay">
+         <!-- <md-divider layout-margin ></md-divider> -->
+        <!-- <md-input-container flex="20" >
+          <label>City</label>
+          <input type="text" ng-model=arrayOfNodes[currentLegIndex].city>
+        </md-input-container> -->
+        <md-autocomplete flex="20"
+        md-input-name="autocompleteField"
+        md-input-minlength="2"
+        md-input-maxlength="18"
+        md-no-cache="noCache"
+        md-selected-item="arrayOfNodes[currentLegIndex].city"
+        md-search-text="searchText[currentLegIndex]"
+        md-items="item in querySearch(searchText[currentLegIndex+1])"
+        md-item-text="item"
+        md-floating-label="Favorite state">
+      <md-item-template>
+        <span md-highlight-text="searchText[currentLegIndex]">{{item}}</span>
+      </md-item-template>
+      </md-autocomplete  >
+        <md-input-container flex-offset="5" flex="20" >
+          <label>Address</label>
+          <md-select ng-model="stay.address">
+            <md-option ng-repeat="add in address" value="{{add}}">{{add}}</md-option>
+          </md-select>
+        </md-input-container>
+        <md-datepicker flex-offset="5" flex="20" ng-model="stay.checkIn" md-placeholder="Check in Date"></md-datepicker>
+
+        <md-datepicker flex-offset="5" flex="20" ng-model="stay.checkOut" md-placeholder="Check out Date"></md-datepicker>
+        <div flex-offset="5" flex="20">
+          <ng-md-icon flex="40"  size="35px" flex-offset="10" icon="add_circle"  ng-show="$index==arrayOfNodes[currentLegIndex].stay.length-1" ng-click="addStay()"></ng-md-icon>
+          <!-- <md-button class="md-fab "><i class="material-icons" ng-click=addStay() ng-show="$index==arrayOfNodes[currentLegIndex].stay.length-1">add stay</i></md-button>
+          <span>Add Leg</span> -->
+        </div>
+
+      </md-card-content>
+    </md-card>
+  </div>
+
+  <div layout="row" ng-show="arrayOfNodes[currentLegIndex+1].stay.length>0" >
+    <md-card  flex-offset="10" flex="80" layout="column"  >
+      <md-card-title >
+        <md-card-title-text>
+          <span class="md-headline">  Stay at {{arrayOfNodes[currentLegIndex+1].city}}</span>
+        </md-card-title-text>
+      </md-card-title>
+
+      <md-card-content  layout ="row" layout-align="center center" class="md-inline-form"  layout-wrap ng-repeat="stay in arrayOfNodes[currentLegIndex+1].stay">
+        <md-divider layout-margin ></md-divider>
+        <!-- <md-input-container flex="20" >
+          <label>City</label>
+          <input type="text" ng-model=arrayOfNodes[currentLegIndex+1].city>
+        </md-input-container> -->
+        <div flex="20">
+          <md-autocomplete
+          md-input-name="autocompleteField"
+          md-input-minlength="2"
+          md-input-maxlength="18"
+          md-no-cache="noCache"
+          md-selected-item="arrayOfNodes[currentLegIndex+1].city"
+          md-search-text="searchText3"
+          md-items="item in querySearch(searchText3)"
+          md-item-text="item"
+          md-floating-label="Favorite state">
+        <md-item-template>
+          <span md-highlight-text="searchText3">{{item}}</span>
+        </md-item-template>
+        <div ng-messages="searchForm.autocompleteField.$error" ng-if="searchForm.autocompleteField.$touched">
+          <div ng-message="required">You <b>must</b> have a favorite state.</div>
+          <div ng-message="minlength">Your entry is not long enough.</div>
+          <div ng-message="maxlength">Your entry is too long.</div>
+        </div>
+      </md-autocomplete>
+        </div>
+
+        <md-input-container flex-offset="5" flex="20" >
+          <label>Address</label>
+          <md-select ng-model="stay.address">
+            <md-option ng-repeat="add in address" value="{{add}}">{{add}}</md-option>
+          </md-select>
+        </md-input-container>
+        <md-datepicker flex-offset="5" flex="20" ng-model="stay.checkIn" md-placeholder="Check in Date"></md-datepicker>
+
+        <md-datepicker flex-offset="5" flex="20" ng-model="stay.checkOut" md-placeholder="Check out Date" ></md-datepicker>
+        <div flex-offset="5" flex="20">
+          <ng-md-icon flex="40"  size="35px" flex-offset="10" icon="add_circle"  ng-show="$index==arrayOfNodes[currentLegIndex+1].stay.length-1" ng-click="addToStay()"></ng-md-icon>
+          <!-- <md-button class="md-fab "><i class="material-icons" ng-click=addToStay()>add</i></md-button>
+          <span>Add Leg</span> -->
+        </div>
+
+      </md-card-content>
+    </md-card>
+  </div>
+
+</div><!-- end of style div -->
+
+</div><!-- end of layout=column-->
+<!--<md-toolbar class="md-default-theme" class="md-whiteframe-5dp" >
+<div class="md-toolbar-tools">
+<md-button class="md-icon-button" aria-label="Settings" ng-disabled="true">
+<md-icon md-font-icon="menu" />
+<i class="material-icons" style="color:white;font:bold;" >menu</i>
+</md-button>
+<h2>
+Travel and Expense
+</h2>
+<span flex></span>
+<md-button class="md-icon-button" aria-label="Favorite">
+<md-icon md-svg-icon="img/icons/favorite.svg" style="color: greenyellow;"></md-icon>
+</md-button>
+<md-button class="md-icon-button" aria-label="More">
+<md-icon md-svg-icon="img/icons/more_vert.svg"></md-icon>
+</md-button>
+</div>
+</md-toolbar>
+-->
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material-icons/0.7.0/angular-material-icons.min.js"></script>
+
+<script src="app.js"></script>
+<!-- Angular Material Library -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.9/angular-material.js"></script>
+
+
+</body>
+</html>
